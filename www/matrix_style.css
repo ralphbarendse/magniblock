@@ -1,0 +1,185 @@
+/* General body styling */
+body {
+  background-color: #333333;  /* Dark grey */
+  color: #00FF00;
+  font-family: 'Courier New', monospace;
+}
+
+/* ASCII Art Styling for Headers */
+h1, h2, h3 {
+  text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 5px;
+  word-spacing: 10px;
+}
+
+/* Sidebar styling */
+.well {
+  background-color: #101010;  /* Almost black */
+  border: 2px solid #00FF00;
+}
+
+/* Main Panel styling */
+.main-panel {
+  background-color: #000000;
+  border: 2px dashed #00FF00;  /* ASCII-art inspired border */
+}
+
+/* Button styling */
+.btn {
+  background-color: #00FF00;
+  color: black;
+  border: none;
+  font-family: 'Courier New', monospace;
+}
+
+/* Text Input styling */
+.shiny-text-input {
+  background-color: black;
+  color: #00FF00;
+  border: 2px solid #00FF00;
+}
+
+/* Tabset Panel styling */
+.nav-tabs {
+  border-bottom: 2px solid #00FF00;
+}
+
+/* Non-active tabs */
+.nav-tabs > li > a {
+  color: #00FF00;
+  border: 1px solid #00FF00;
+  background-color: #000000;
+}
+
+/* Hover effect for non-active tabs */
+.nav-tabs > li > a:hover {
+  background-color: #00FF00;
+  color: #000000;
+}
+
+/* Active tab styling */
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+  color: #000000;
+  background-color: #00FF00;
+  border: 1px solid #00FF00;
+}
+
+/* Content within the tabs */
+.tab-content {
+  background-color: #000000;
+  border: 2px solid #00FF00;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+/* Center content in the middle of the screen */
+.center-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* ASCII Art Styling */
+.ascii-art {
+  font-family: 'Courier New', monospace;
+  font-size: 2em;
+  color: #00FF00;
+  text-align: center;
+}
+
+/* Subtitle Styling */
+.subtitle {
+  font-family: 'Courier New', monospace;
+  font-size: 1.2em;
+  color: #00FF00;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* Custom styling for preformatted text */
+.ascii-art pre {
+  background-color: #333333; /* Black Background */
+  color: #00FF00;            /* Green Text */
+  border: none;              /* No Border */
+  margin: 0;                 /* No Margin */
+  padding: 0;                /* No Padding */
+}
+
+
+/* Footer styling */
+.footer {
+  background-color: #101010;  /* Almost black */
+  color: #00FF00;             /* Matrix green */
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  font-family: 'Courier New', monospace;
+}
+
+/* Footer link styling */
+.footer a {
+  color: #00FF00;             /* Matrix green */
+  text-decoration: none;
+}
+
+.footer img {
+  height: 30px;
+  vertical-align: middle;
+}
+
+/* Matrix Canvas */
+#matrixCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+/* Style for the DataTables */
+.dataTables_wrapper {
+  color: white !important;
+}
+
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+.transaction-table th,
+.transaction-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+.transaction-table th {
+    background-color: #f2f2f2;
+}
+
+.block-rectangle {
+  width: 100px;
+  height: 50px;
+  border: 1px solid black;
+  margin: 5px;
+  cursor: pointer;
+}
+
+
+#donateBtn {
+  background: none !important;
+  border: none;
+  padding: 0 !important;
+  font-family: arial, sans-serif;
+  color: #069;
+  text-decoration: underline;
+  cursor: pointer;
+}

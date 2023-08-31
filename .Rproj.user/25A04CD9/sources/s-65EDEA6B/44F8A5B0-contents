@@ -1,0 +1,296 @@
+# Import the shiny library for UI
+library(shiny)
+#Import the shiny js library for more advanced client side operations
+library(shinyjs)
+#Import the shinyBS library for tooltips
+library(shinyBS)
+# Import the digest library for hash generation
+library(digest)
+
+# Source Additional R Scripts
+source("validation_logic.R")
+
+
+
+ui <- fluidPage(
+  useShinyjs(),  # Initialize shinyjs
+  
+  # Footer
+  tags$div(class = "footer",
+           "Copyright © 2023 MagniBlock | ",
+           tags$a(href = "https://www.donationpage.com", target = "_blank", "Donate"),
+           " | ",
+           tags$a(href = "https://github.com/YourGitHubUsername/YourRepo", target = "_blank", "GitHub"),
+           tags$img(src = "logo.png", alt = "MagniBlock Logo")
+  ),
+  
+  
+  # Include custom CSS
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "matrix_style.css"),
+    tags$script(src = "matrix_rain.js")  # Include the external JavaScript file
+  ),
+  
+  tags$canvas(id = "matrixCanvas"),
+  
+  # Starting Page
+  div(id = "startPage",
+      div(class = "center-content",
+          div(class = "ascii-art",
+              HTML("<pre>
+8888ba.88ba                             oo  888888ba  dP                   dP       
+88  `8b  `8b                                88    `8b 88                   88       
+88   88   88 .d8888b. .d8888b. 88d888b. dP a88aaaa8P' 88 .d8888b. .d8888b. 88  .dP  
+88   88   88 88'  `88 88'  `88 88'  `88 88  88   `8b. 88 88'  `88 88'  `\"\" 88888\"   
+88   88   88 88.  .88 88.  .88 88    88 88  88    .88 88 88.  .88 88.  ... 88  `8b. 
+dP   dP   dP `88888P8 `8888P88 dP    dP dP  88888888P dP `88888P' `88888P' dP   `YP 
+ooooooooooooooooooooooo~~~~.88~ooooooooooooooooooooooooooooooooooooooooooooooooooooo
+                       d8888P                                                       
+                 </pre>")
+          ),
+          div(class = "subtitle",
+              "An Explorative Tool to Learn About Blockchain Technologies"
+          ),
+          fluidRow(
+            column(6, actionButton("startButton", "Start")),
+            column(6, actionButton("infoButton", "Blockchains?"))
+          )
+      )
+  ),
+  
+  # Hidden Main Content
+  hidden(
+    div(id = "mainContent",
+        titlePanel("Blockchain Educational Tool"),
+        
+        # Top Bar Panel
+        tabsetPanel(
+          # First Tab
+          tabPanel("Transactions & Blocks",
+                   fluidRow(
+                     # Column 1: 33% of screen width
+                     column(4,
+                            h4("Educational Guide"),
+                            p("This tab allows you to interact with a simulated blockchain. Follow the guide below:"),
+                            
+                            hr(),
+                            
+                            h4("Step 1: Add Transactions", id = "step1"),
+                            p("Fill in the sender, receiver, and amount, then click 'Add Transaction'. This simulates a transaction between two parties."),
+                            textInput("sender", "Sender:"),
+                            bsTooltip(id = "sender", title = "This is the sender of the transaction.", placement = "right"),
+                            textInput("receiver", "Receiver:"),
+                            bsTooltip(id = "receiver", title = "This is the receiver of the transaction.", placement = "right"),
+                            numericInput("amount", "Amount:", value = 0),
+                            bsTooltip(id = "amount", title = "This is the amount to be transferred.", placement = "right"),
+                            actionButton("add_transaction", "Add Transaction"),
+                            bsTooltip(id = "add_transaction", title = "Click to add the transaction to the pool.", placement = "right"),
+                            actionButton("add_block", "Add Block"),
+                            bsTooltip(id = "add_block", title = "Click to create a new block and add it to the blockchain.", placement = "right"),
+                            
+                            hr(),
+                            
+                            h4("Step 2: Generate a Block", id = "step2"),
+                            p("Type some block data and click 'Add Block'. This will package all pending transactions into a block and add it to the blockchain."),
+                            textInput("data", "Block Data:"),
+                            actionButton("add_block", "Add Block"),
+                            
+                            hr(),
+                            
+                            h4("Step 3: View Pool & Blockchain", id = "step3"),
+                            p("Observe the transaction pool and blockchain table on the right. The transaction pool shows pending transactions, while the blockchain table shows added blocks."),
+                            tableOutput("transaction_pool")
+                     ),
+                     
+                     # Column 2: 67% of screen width
+                     column(8,
+                            h4("Blockchain Table"),
+                            p("Below is the blockchain table, where each row represents a block in the blockchain. 
+                              You can click on a row to view its transactions."),
+                            DT::dataTableOutput("interactive_blockchain_table"),
+                            h4("Block Contents"),
+                            p("The table below shows the transactions in the block you've selected from the blockchain table."),
+                            uiOutput("blockchain_explorer") 
+                     )
+                   )
+          ),
+          
+          # Second Tab
+          tabPanel("Consensus",
+                   h4("Content for Consensus tab will go here.")
+          )
+        )
+    )
+  ),
+  # Hidden Info Page
+  hidden(
+    div(id = "infoPage",
+        fluidRow(
+          column(12,
+                 htmlOutput("blockchainEssay")
+          )
+        )
+    )
+  )
+)
+  
+server <- function(input, output, session) {
+  
+  # Initialize transaction pool as a reactiveVal
+  transaction_pool <- reactiveVal(list())
+  
+  # Create a new block
+  create_block <- function(index, timestamp, data, previous_hash, transactions) {
+    block <- list(
+      index = index,
+      timestamp = timestamp,
+      data = data,
+      previous_hash = previous_hash,
+      transactions = transactions
+    )
+    block$hash <- digest(paste0(index, timestamp, data, previous_hash), algo="sha256")
+    return(block)
+  }
+  
+  observeEvent(input$startButton, {
+    hide("startPage")
+    hide("infoPage")
+    show("mainContent")
+  })
+  
+  observeEvent(input$infoButton, {
+    hide("startPage")
+    hide("mainContent")
+    show("infoPage")
+  })
+  
+  # Create the genesis block
+  genesis_block <- create_block(1, Sys.time(), "Genesis Block", "0", list())
+  
+  # Initialize blockchain with the genesis block
+  blockchain <- reactiveVal(list(genesis_block))
+  
+  observeEvent(input$validate, {
+    is_valid <- validate_blockchain(blockchain())
+    if (is_valid) {
+      showNotification("The blockchain is valid.", type="message")
+    } else {
+      showNotification("The blockchain is NOT valid!", type="error")
+    }
+  })
+  
+  # Add a transaction to the transaction pool
+  add_transaction <- function(sender, receiver, amount) {
+    transaction <- list(
+      sender = sender,
+      receiver = receiver,
+      amount = amount
+    )
+    current_pool <- transaction_pool()
+    transaction_pool(c(current_pool, list(transaction)))
+  }
+  
+  observeEvent(input$add_transaction, {
+    add_transaction(input$sender, input$receiver, input$amount)
+  })
+  
+  observeEvent(input$add_test_transaction, {
+    test_transaction <- list(sender = "Alice", receiver = "Bob", amount = 50)
+    add_transaction(test_transaction$sender, test_transaction$receiver, test_transaction$amount)
+  })
+  
+  # Add a block to the blockchain
+  add_block <- function(data) {
+    last_block <- tail(blockchain(), 1)[[1]]
+    new_block <- create_block(
+      last_block$index + 1,
+      Sys.time(),
+      data,
+      last_block$hash,
+      transaction_pool()  # Use the transaction pool here
+    )
+    blockchain(c(blockchain(), list(new_block)))
+    transaction_pool(list())  # Clear the transaction pool
+  }
+  
+  # Add new block
+  observeEvent(input$add_block, {
+    add_block(input$data)
+  })
+  
+  # Display blockchain as an interactive table
+  output$interactive_blockchain_table <- DT::renderDataTable({
+    block_data <- do.call(rbind, lapply(blockchain(), function(x) {
+      data.frame(
+        index = x$index,
+        timestamp = x$timestamp,
+        data = x$data,
+        previous_hash = x$previous_hash,
+        hash = x$hash,
+        total_transactions = length(x$transactions),
+        stringsAsFactors = FALSE
+      )
+    }))
+    return(block_data)
+  })
+  
+  
+  # Blockchain explorer: Show details of the selected block as one HTML table
+  output$blockchain_explorer <- renderUI({
+    selected_row <- input$interactive_blockchain_table_rows_selected
+    if (length(selected_row) == 0) return(NULL)
+    
+    selected_block <- blockchain()[[selected_row]]
+    
+    transactions <- selected_block$transactions
+    if (length(transactions) == 0) return("No transactions in this block.")
+    
+    transaction_df <- do.call(rbind, lapply(transactions, function(x) data.frame(t(unlist(x)))))
+    names(transaction_df) <- c("Sender", "Receiver", "Amount")
+    
+    renderTable(transaction_df, rownames=FALSE)
+  })
+  
+  # Display introduction and guide text
+  output$intro_text <- renderText({
+    "This is an educational tool to help you understand the basics of blockchain technology."
+  })
+  
+  output$guide_text <- renderText({
+    paste(
+      "1. Enter some data and click 'Add Block' to add a block to the chain.",
+      "2. Click 'Validate Blockchain' to validate the entire chain.",
+      sep = "<br/>"
+    )
+  })
+  
+  # Display current transaction pool as a table
+  output$transaction_pool <- renderTable({
+    pool_data <- transaction_pool()
+    if (length(pool_data) == 0) return("No transactions in the pool.")
+    
+    transaction_pool_df <- do.call(rbind, lapply(pool_data, function(x) data.frame(t(unlist(x)))))
+    names(transaction_pool_df) <- c("Sender", "Receiver", "Amount")
+    
+    return(transaction_pool_df)
+  }, rownames = FALSE)
+  
+  # Inside server function
+  blockchain_essay_content <- reactive({
+    content <- readChar("blockchain_essay.txt", file.info("blockchain_essay.txt")$size)
+    if (!endsWith(content, "\n")) {
+      content <- paste0(content, "\n")
+    }
+    return(content)
+  })
+  
+  
+  
+
+  
+}
+
+
+
+
+shinyApp(ui, server)

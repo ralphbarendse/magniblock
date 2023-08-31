@@ -1,0 +1,27 @@
+{
+    "id": "33A30AC0",
+    "path": "~/EDA/R Projects/Exploratory blockchain fundamentals/genesis.R",
+    "project_path": "genesis.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1693473709576.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "28,12",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1693475933,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1693475933014,
+    "read_only": false,
+    "read_only_alternatives": []
+}

@@ -1,0 +1,12 @@
+name: magniblock
+title: magniblock
+username: ralphbarendse
+account: ralphbarendse
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9730672
+bundleId: 7630684
+url: https://ralphbarendse.shinyapps.io/magniblock/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

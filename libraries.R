@@ -1,0 +1,13 @@
+#install.packages("digest")
+#install.packages("shinyjs")
+#install.packages("shiny")
+#install.packages("shinyBS")
+#install.packages("networkD3")
+#install.packages("qrcode")
+
+library(shiny)
+library(shinyjs)
+library(shinyBS)
+library(digest)
+library(networkD3)
+library(qrcode)
